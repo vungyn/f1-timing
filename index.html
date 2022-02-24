@@ -68,7 +68,7 @@
                 text-align: right;
             }
             .time {
-                text-transform: capitalize;
+                text-transform: uppercase;
             }
             .seconds {
                 color: #404040;
@@ -109,7 +109,7 @@
                         document.querySelector('.list').innerHTML = ''
                         fastest = undefined
                         data.forEach(driver => {
-                            driver = driver.match(/ (.*?) \((.*?)\) (.*?), (?:(.*?), )?(.*?) /)
+                            driver = driver.match(/ (.*?) \((.*?)\) ?(.*?), (?:(.*?), )?(.*?) /)
                             gap = ''
                             if (driver[3] != 'no time') {
                                 time = driver[3].match(/(\d*)m(\d*.\d*)/)

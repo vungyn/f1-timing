@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>F1 Testing Classification</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            @font-face{font-family:F1;font-display:auto;src:url(https://www.formula1.com/etc/designs/fom-website/fonts/F1Regular/Formula1-Regular.woff2) format("woff2"),url(https://www.formula1.com/etc/designs/fom-website/fonts/F1Regular/Formula1-Regular.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:F1;font-display:auto;src:url(https://www.formula1.com/etc/designs/fom-website/fonts/F1RegularItalic/Formula1-Italic.woff2) format("woff2"),url(https://www.formula1.com/etc/designs/fom-website/fonts/F1RegularItalic/Formula1-Italic.woff) format("woff");font-weight:400;font-style:italic;font-display:swap}@font-face{font-family:F1Bold;font-display:auto;src:url(https://www.formula1.com/etc/designs/fom-website/fonts/F1Bold/Formula1-Bold.woff2) format("woff2"),url(https://www.formula1.com/etc/designs/fom-website/fonts/F1Bold/Formula1-Bold.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:F1Black;font-display:auto;src:url(https://www.formula1.com/etc/designs/fom-website/fonts/F1Black/Formula1-Black.woff2) format("woff2"),url(https://www.formula1.com/etc/designs/fom-website/fonts/F1Black/Formula1-Black.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:F1Wide;font-display:auto;src:url(https://www.formula1.com/etc/designs/fom-website/fonts/F1Wide/Formula1-Wide.woff2) format("woff2"),url(https://www.formula1.com/etc/designs/fom-website/fonts/F1Wide/Formula1-Wide.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:F1YEAR;font-display:auto;src:url(https://www.formula1.com/etc/designs/fom-website/fonts/F1YEAR/F1YEARRegular.woff2) format("woff2"),url(https://www.formula1.com/etc/designs/fom-website/fonts/F1YEAR/F1YEARRegular.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}
+            body {
+                width: 100vw;
+                height: 100vh;
+                margin: 0;
+                background: #000;
+                color: #fff;
+                font-family: F1;
+                font-size: 2.25vw;
+            }
+            table {
+                width: 100vw;
+                border-collapse: collapse;
+                border-spacing: 0;
+            }
+            tr {
+                counter-increment: p;
+            }
+            td {
+                padding: .5625vw;
+                border: .5625vw solid transparent;
+            }
+            .position {
+                width: 0;
+                padding: 0;
+            }
+            .position::before {
+                width: 4.5vw;
+                height: 4.5vw;
+                background: #fff;
+                color: #000;
+                content: counter(p);
+                border-radius: 0 0 1.125vw 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .driver {
+                font-family: F1Bold;
+                text-transform: uppercase;
+            }
+            .tyre, .laps {
+                text-align: center;
+            }
+            .tyre--c3 {
+                color: #ffdd00;
+            }
+            .tyre--c4, .tyre--c5 {
+                color: #e72f27;
+            }
+            .tyre--c3::before, .tyre--c4::before {
+                content: '(';
+            }
+            .tyre--c3::after, .tyre--c4::after {
+                content: ')';
+            }
+            .tyre::before, .tyre::after {
+                vertical-align: 0.08em;
+            }
+            .time, .gap {
+                text-align: right;
+            }
+            .time {
+                text-transform: capitalize;
+            }
+            .seconds {
+                color: #404040;
+                height: 4.5vw;
+                padding: 0;
+                text-align: center;
+            }
+            a {
+                color: inherit;
+                text-decoration: none;
+                text-transform: uppercase;
+                font-family: F1Bold;
+            }
+        </style>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-V02DK130P5"></script>
+        <script>
+            window.dataLayer = window.dataLayer || []
+            function gtag() { dataLayer.push(arguments) }
+            gtag('js', new Date())
+            gtag('config', 'G-V02DK130P5')
+
+            seconds = 30
+            timer = undefined
+
+            function countdown() {
+                document.querySelector('.seconds').innerHTML = --seconds;
+                if (seconds == 0) {
+                    clearInterval(timer)
+                    update()
+                }
+            }
+
+            function update() {
+                fetch('https://livecentercdn.norkon.net/BulletinFeed/theracemedia/21239/Initial/')
+                    .then(response => response.json())
+                    .then(data => {
+                        data = data.result.channelContent.topHtml.match(/<p>(.*)<\/p>/)[1].split('<br>')
+                        document.querySelector('.list').innerHTML = ''
+                        fastest = undefined
+                        data.forEach(driver => {
+                            driver = driver.match(/ (.*?) \((.*?)\) (.*?), (?:(.*?), )?(.*?) /)
+                            gap = ''
+                            if (driver[3] != 'no time') {
+                                time = driver[3].match(/(\d*)m(\d*.\d*)/)
+                                if (!fastest) {
+                                    fastest = time[1] * 60 + parseFloat(time[2])
+                                } else {
+                                    gap = '+' + (-fastest + (time[1] * 60 + parseFloat(time[2]))).toFixed(3)
+                                }
+                            }
+                            document.querySelector('.list').innerHTML += '<tr><td class="position"></td><td class="driver">' + driver[1] + '</td><td class="team">' + driver[2] + '</td><td class="time">' + (driver[3] != 'no time' ? driver[3].replace('m', ':').replace('s', '') : driver[3]) + '</td><td class="gap">' + gap + '</td><td class="tyre' + (driver[4] ? ' tyre--' + driver[4].toLowerCase() : '') + '">' + (driver[4] ?? '') + '</td><td class="laps">' + driver[5] + '</td></tr>'
+                        })
+
+                        seconds = 30
+                        document.querySelector('.seconds').innerHTML = seconds
+                        timer = setInterval(countdown, 1000)
+                    })
+            }
+
+            document.addEventListener('DOMContentLoaded', update)
+        </script>
+    </head>
+    <body>
+        <table>
+            <thead>
+                <tr>
+                    <td class="seconds"></td>
+                    <td class="title" colspan="2"><a href="#">Times from The Race Live Hub</a></td>
+                    <td class="time">Lap Time</td>
+                    <td class="gap">Gap</td>
+                    <td class="tyre">Tyre</td>
+                    <td class="laps">Laps</td>
+                </tr>
+            </thead>
+            <tbody class="list">
+            </tbody>
+        </table>
+    </body>
+</html>

@@ -102,7 +102,7 @@
             }
 
             function update() {
-                fetch('https://livecentercdn.norkon.net/BulletinFeed/theracemedia/21239/Initial/')
+                fetch('https://livecentercdn.norkon.net/BulletinFeed/theracemedia/21240/Initial/')
                     .then(response => response.json())
                     .then(data => {
                         data = data.result.channelContent.topHtml.match(/<p>(.*)<\/p>/)[1].split('<br>')
@@ -136,7 +136,7 @@
             <thead>
                 <tr>
                     <td class="seconds"></td>
-                    <td class="title" colspan="2"><a href="https://the-race.com/f1-testing-2022-barcelona-day-2/">Times from The Race Live Hub</a></td>
+                    <td class="title" colspan="2"><a href="https://the-race.com/f1-testing-2022-barcelona-day-3/">Times from The Race Live Hub</a></td>
                     <td class="time">Lap Time</td>
                     <td class="gap">Gap</td>
                     <td class="tyre">Tyre</td>
